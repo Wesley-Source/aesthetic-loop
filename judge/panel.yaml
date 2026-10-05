@@ -1,0 +1,65 @@
+# judge/panel.yaml — painel de juízes do aesthetic-loop.
+#
+# FORMATO MULTI-FAMÍLIA (o modo canônico): cada entrada de `judges` tem uma
+# `family` DISTINTA. O firewall remove da rodada a família do builder.
+# Com 2+ famílias configuradas e builder de uma delas, restam 2+ juízes de
+# famílias diferentes — o mínimo viável para maioria.
+#
+# SINGLE-FAMILY é um CASO ESPECIAL DEGRADADO, não o modo canônico:
+#   - defina `mode: single-family` explicitamente;
+#   - o loop roda com gates decidindo e pairwise só desempatando;
+#   - meta-juiz roda a cada 3 rodadas (não 5);
+#   - o README rotula: "single-family — not recommended as sole configuration".
+#   - NUNCA publique resultados single-family como evidência da tese.
+mode: single-family   # troque para "multi-family" quando a 2ª família existir
+judge_temperature: 0.2   # B1: nunca 0 (swap viraria filtro de viés sistemático, não de ruído)
+
+judges:
+  # Pin de versão EXATA (I5): APIs deprecam/atualizam snapshots silenciosamente;
+  # mudança de pin → re-run smoke do WiserUI-Bench (30 pares, benchmark/PROTOCOL.md).
+  - id: glm-4.7
+    family: zai
+    provider: zai
+    model: glm-4.7          # pin exato, não "latest"
+    api_base_env: ZAI_API_BASE
+    api_key_env: ZAI_API_KEY
+    enabled: true
+  # Exemplos multi-família (habilitar quando o dono comprar créditos — B1):
+  # - id: claude-sonnet-4-6
+  #   family: anthropic
+  #   provider: anthropic
+  #   model: claude-sonnet-4-6-20260210
+  #   api_key_env: ANTHROPIC_API_KEY
+  #   enabled: true
+  # - id: gemini-3.5-pro
+  #   family: google
+  #   provider: google
+  #   model: gemini-3.5-pro-2026-01-15
+  #   api_key_env: GOOGLE_API_KEY
+  #   enabled: true
+
+# Personas ESPP-lite: cada juiz × cada persona = 1 voto. Maioria simples decide.
+personas:
+  - id: designer
+    description: "Sênior em design de produto: hierarquia tipográfica, ritmo, consistência. Ancore CADA julgamento em evidência visual específica da screenshot."
+  - id: apressado
+    description: "Usuário final apressado, mobile-first: entende o que fazer em 3 segundos? CTA óbvio? Texto legível?"
+  - id: dev-legado
+    description: "Dev cético que mantém o sistema há anos: parece consistente com uma UI de produto séria? Algo parece quebrado/fora do lugar?"
+
+# Pesos por estado (I1): agregação ponderada, não maioria flat — homepage pesa
+# mais que footer. Estados vêm do censo (tools/state_census.py).
+state_weights:
+  default: 1.0
+  # homepage: 2.0
+  # checkout: 3.0
+  # footer: 0.5
+
+# Limiares do meta-juiz — CALIBRÁVEIS (B1): os defaults abaixo são chutes
+# iniciais. Antes de confiar, meça o swap-rate baseline do seu painel
+# (benchmark/PROTOCOL.md, smoke run) e fixe aqui os valores medidos.
+meta_judge:
+  window_rounds: 5            # single-family: use 3
+  swap_rate_min: 0.50         # abaixo → PAUSE_HUMAN (decidindo por ruído)
+  kappa_min: 0.20             # abaixo → DEMOTE do juiz divergente
+  undecided_streak_pause: 2   # N2: 2 indecisos seguidos na mesma direção → pausa + humano

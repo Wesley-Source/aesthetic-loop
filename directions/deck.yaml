@@ -1,0 +1,54 @@
+# directions/deck.yaml — deck de direções estéticas pré-enumeradas (patch I4).
+
+# Por quê: um builder único recebendo só "uma mudança pequena" gera variações
+# correlacionadas — 20 rodadas produzem ~3 ideias distintas e o loop morre em
+# PLATÔ com 1–2 keeps. Cada rodada recebe UMA direção ainda não tentada daqui;
+# o log marca direções queimadas. Deck esgotado → PLATÔ legítimo.
+
+# Cada direção: id, brief (para o builder), rubrica (para o juiz reconhecer a
+# dimensão), tipicamente compatível com mudanças de 1 arquivo/~30 linhas de CSS.
+
+deck:
+  - id: typographic-hierarchy
+    brief: "Aumente o contraste entre níveis de texto: títulos mais presentes, corpo mais calmo, metadados menores. Uma escala tipográfica clara."
+    rubric: "Dá para dizer em 1s o que é título, corpo e metadado?"
+
+  - id: vertical-rhythm
+    brief: "Padronize o espaçamento vertical em uma escala (ex.: 4/8/16/24/48) — nada de valores arbitrários. Respire entre seções, agrupe o que é irmão."
+    rubric: "Itens relacionados estão visualmente agrupados? Seções se separam sem linhas?"
+
+  - id: accent-color-discipline
+    brief: "Escolha UMA cor de acento com contraste real e use-a só onde há ação/ênfase. Mate gradientes decorativos e pastéis de baixo contraste."
+    rubric: "O olho vai direto para a ação principal? A cor guia ou decora?"
+
+  - id: elevation-hierarchy
+    brief: "Substitua sombras idênticas em tudo por uma hierarquia de elevação: superfície plana < card < overlay. Sombra comunica profundidade funcional."
+    rubric: "A sombra diz o que flutua sobre o quê?"
+
+  - id: density
+    brief: "Aumente a densidade onde há conteúdo escaneável (tabelas, listas, cards) — whitespace é decisão, não default. Reduza.padding generoso sem propósito."
+    rubric: "Informação por tela sobe sem apertar?"
+
+  - id: cta-clarity
+    brief: "A ação principal de cada seção deve ser inequívoca: um botão primário por região, labels de verbo, estados hover/active definidos."
+    rubric: "Onde eu clico para fazer a coisa principal? Foi óbvio?"
+
+  - id: component-consistency
+    brief: "Irmãos devem parecer irmãos: mesmo raio, mesmo padding, mesma tipografia para componentes do mesmo tipo. Escolha uma escala de raio (ex.: 4/8/16)."
+    rubric: "Botões/cards/inputs parecem um sistema ou colagem?"
+
+  - id: color-contrast-a11y
+    brief: "Toda combinação texto/fundo para 4.5:1+ (WCAG AA). Cinza-claro-sobre-branco é ilegível, não elegante."
+    rubric: "Consigo ler o texto secundário sem esforço?"
+
+  - id: iconography-restraint
+    brief: "Remova emojis fazendo papel de ícone funcional; se houver ícones, um estilo só (outline OU filled), mesmo tamanho óptico."
+    rubric: "Ícones comunicam ou enfeitam?"
+
+  - id: empty-and-edge-states
+    brief: "Desenhe o estado vazio e o estado com conteúdo longo: truncamento com ellipsis, wrap digno, mensagem de vazio útil (não um travessão solitário)."
+    rubric: "O que acontece com nome de 80 caracteres ou lista vazia?"
+
+# Rotina do loop: embaralhe com seed logada, sirva em ordem, marque queimadas
+# em aesthetic-results.md. Métrica do FIM: keeps/rodada (obrigatória — I4;
+# abaixo de 0.1 em validação interna, o posicionamento público muda).

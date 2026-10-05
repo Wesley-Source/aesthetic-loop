@@ -1,0 +1,9 @@
+{
+  "name": "aesthetic-loop",
+  "version": "0.1.0",
+  "description": "Keep-or-revert loop for UI aesthetics: deterministic gates + blind pairwise judge with position swap (AB+BA). The Karpathy loop for the domain Karpathy said it couldn't work in.",
+  "author": "Wesley Carlos Nascimento <wcdev.business@proton.me>",
+  "license": "MIT",
+  "repository": "https://github.com/Wesley-Source/aesthetic-loop",
+  "keywords": ["aesthetic", "ui", "design", "loop", "pairwise", "keep-or-revert"]
+}

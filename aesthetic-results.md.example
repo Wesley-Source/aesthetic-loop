@@ -1,0 +1,71 @@
+# aesthetic-results.md.example — estrutura do log APPEND-only
+
+Copie para `aesthetic-results.md` na raiz do projeto-alvo e faça APPEND a cada
+rodada. **Este exemplo usa placeholders `<N>` — nenhum número aqui é real.**
+Números só entram neste formato vindos de um run executado (I6: número
+inventado por soar bem é a tentação que o B3 existe para matar).
+
+O log é a prova auditável do loop: intenção ANTES, resultado DEPOIS — nunca
+afirme "reverti" sem os comandos terem terminado exit 0.
+
+---
+
+```markdown
+=== aesthetic-loop run <YYYY-MM-DD HH:MM:SS> ===
+alvo: <url> | direção: <brief do usuário> | BASELINE_SHA: <sha> | branch: aesthetic/<slug>
+painel: <ids dos juízes habilitados> | mode: <multi-family|single-family>
+builder-family: <família> (excluída do painel da rodada) | judge_temperature: 0.2
+fixture_hash: <sha256 do HTML congelado do champion> | estados (censo): <N, manifest: states/manifest.json>
+deck: <direção 1> → <direção 2> → ... (queimadas marcadas ✗)
+
+=== rodada <N> ===
+direção: <id da direção do deck> | dedup-hash: <hash normalizado do diff>
+builder_change: <1 arquivo, resumo ≤ 30 linhas>   # builder NUNCA lê esta seção
+gates: build PASS · axe PASS · contrast PASS · dom_invariance PASS
+slop_signal: <champion>→<challenger> (SINAL, não gate — ver B2)
+fixture_hash check: PASS
+pairwise: [seed <N>]
+  <judge>/<persona>  AB→A  BA→A   consistente ✓  racional: "<cópia do RATIONALE>"
+  <judge>/<persona>  AB→B  BA→A   INCONSISTENTE ✗ (descartado — não é moeda)
+  <judge>/<persona>  AB→EMPATE  BA→EMPATE  ✓ → empate não é aceite
+veredito: <KEEP|REVERT> <contagem de votos> → <champion avança / revert fiel>
+commit: <sha ou "nenhum — revert"> | screenshots: <paths do par>
+tokens: in <N> out <N> | custo: $<N.nn> | wall: <N>s (gates) + <N>s (juiz)
+
+=== meta-juiz (rodadas <a>–<b>) ===
+swap-rate: <NN>% (<k>/<n>) | κ: <0.nn> | limiares: swap≥<0.nn> κ≥<0.nn>
+veredito: <CONTINUE|PAUSE_HUMAN|DEMOTE:<judge>>
+# PAUSE_HUMAN → votação humana abaixo; DEMOTE → juiz com peso 0 nas próximas rodadas
+
+=== voto humano (rodada <N>, acionado por PAUSE_HUMAN ou burst do FIM) ===
+champion vs challenger (batch <k>/<10> do burst) → usuário escolheu <A|B>
+→ par persistido em aesthetic-calibration.md (<N> pares acumulados)
+
+=== rodada <N+1> ===
+(gate falhou — exemplo de falha de produto)
+gates: build PASS · axe FAIL:axe:color-contrast+2 · ...
+veredito: REVERT (gate) | PLATÔ=<k> | comandos de revert: git restore --source=HEAD
+--staged --worktree -- <path> [exit 0] · git status --porcelain limpo ✓
+
+=== infra retry (não conta p/ FALHAS→FIM — I3) ===
+rodada <N>: Chromium render timeout → retry 2/3 com backoff 5s → sucesso
+(rodada prosseguiu normalmente; FALHAS de produto permanece <N>)
+
+=== FIM ===
+motivo: <tempo|PLATÔ=5|FALHAS=3|deck esgotado>
+rodadas: <N> | keeps: <N> | **keeps/rodada: <0.nn>** (obrigatória — I4)
+commits mantidos: <sha> <sha> ... (branch aesthetic/<slug>)
+champion final: <screenshot antes> → <screenshot depois>
+swap-rate final: <NN>% | κ final: <0.nn> | custo total: $<N.nn>
+pin dos juízes usados: <model@versão por juiz> (I5)
+single-family? → RECOMENDAÇÃO: voto humano em lote sobre o diff acumulado antes de merge
+```
+
+`aesthetic-calibration.md` (o dono, não o builder, escreve aqui):
+```
+- (<data>) <estado_A.png> vs <estado_B.png> → escolhi B | contexto: "prefiro denso"
+- (<data>) ... | destilado a cada 10 pares em regras de rubrica injetadas no
+  prompt do juiz (judge/prompt_pairwise.md, seção persona) — linha DIAL.
+  Meta v1.0: ≥80% de acerto do painel vs. dono EM n≥50 (reportar sempre com
+  IC de Wilson — benchmark/wilson.py; 7 pares com 80% = IC ±30pp, não é claim).
+```

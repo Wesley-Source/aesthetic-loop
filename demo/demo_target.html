@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aesthetic-Loop Demo Target — Pricing</title>
+<style>
+  /* DEMO TARGET — estados FIXOS, zero conteúdo dinâmico (I2: hash determinístico).
+     Propósito: alvo legítimo para validar gates + fluxo do loop sem API de juiz.
+     Propositalmente "default de IA" — é o que o loop existe para melhorar. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Inter, -apple-system, system-ui, sans-serif;
+    background: #F4F1EA;
+    color: #3d3a34;
+    font-weight: 300;
+  }
+  header { padding: 64px 24px 32px; text-align: center; }
+  header h1 { font-size: 44px; font-weight: 300; letter-spacing: -1px; margin-bottom: 12px; }
+  header p { font-size: 18px; color: #8a857c; }
+  .gradient-band {
+    height: 8px;
+    background: linear-gradient(90deg, #b8a9f0, #8fb6f2);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 960px;
+    margin: 48px auto;
+    padding: 0 24px;
+  }
+  .card {
+    background: #faf8f4;
+    border-radius: 24px;
+    padding: 40px 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+  }
+  .card h2 { font-size: 22px; font-weight: 400; margin-bottom: 8px; }
+  .card .price { font-size: 40px; margin: 16px 0; }
+  .card ul { list-style: none; margin: 16px 0 24px; flex: 1; }
+  .card li { padding: 6px 0; font-size: 15px; color: #6f6a61; }
+  .card li::before { content: "✨ "; }
+  .card button {
+    border: 0; border-radius: 999px; padding: 14px 24px;
+    font-size: 16px; cursor: pointer; background: #c9b8f5; color: #4a4361;
+  }
+  .card.featured button { background: #a78bfa; color: #fff; }
+  .badge { display: inline-block; font-size: 12px; color: #9d95e8; margin-bottom: 8px; }
+  /* Estados fixos para o censo (I1) */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 10; }
+  .modal-backdrop.open { display: flex; align-items: center; justify-content: center; }
+  .modal { background: #fff; border-radius: 20px; padding: 32px; max-width: 420px; }
+  .empty-note[data-empty="true"] { display: none; }
+  .empty-note[data-empty="true"].shown { display: block; text-align: center; padding: 32px; color: #999; }
+  footer { text-align: center; padding: 48px 24px; color: #a29b8f; font-size: 14px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Simple Pricing</h1>
+    <p>Choose the plan that's right for you ✨</p>
+  </header>
+  <div class="gradient-band"></div>
+
+  <main class="cards">
+    <section class="card">
+      <h2>Starter</h2>
+      <div class="price">$9</div>
+      <ul>
+        <li>1 project</li>
+        <li>Basic analytics</li>
+        <li>Community support</li>
+      </ul>
+      <button type="button" onclick="openModal('Starter')">Get started</button>
+    </section>
+    <section class="card featured">
+      <span class="badge">Most popular</span>
+      <h2>Pro</h2>
+      <div class="price">$29</div>
+      <ul>
+        <li>10 projects</li>
+        <li>Advanced analytics</li>
+        <li>Priority support</li>
+      </ul>
+      <button type="button" onclick="openModal('Pro')">Get started</button>
+    </section>
+    <section class="card">
+      <h2>Enterprise</h2>
+      <div class="price">$99</div>
+      <ul>
+        <li>Unlimited projects</li>
+        <li>SSO &amp; audit logs</li>
+        <li>Dedicated support</li>
+      </ul>
+      <button type="button" onclick="openModal('Enterprise')">Contact sales</button>
+    </section>
+  </main>
+
+  <p class="empty-note" data-empty="true">No plans available right now — check back soon.</p>
+
+  <footer>© 2026 Demo Target Co. All rights reserved.</footer>
+
+  <div class="modal-backdrop" id="backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Signup">
+      <h2 style="margin-bottom:12px">Sign up</h2>
+      <p id="modal-plan" style="margin-bottom:20px">Selected plan.</p>
+      <button type="button" onclick="closeModal()" style="background:#3d3a34;color:#fff;border:0;border-radius:999px;padding:12px 24px;cursor:pointer">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Determinístico: nenhum Date.now, nenhum random, nenhum fetch (I2).
+    function openModal(plan) {
+      document.getElementById('modal-plan').textContent = 'You picked the ' + plan + ' plan.';
+      document.getElementById('backdrop').classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('backdrop').classList.remove('open');
+    }
+  </script>
+</body>
+</html>

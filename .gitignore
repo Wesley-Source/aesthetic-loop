@@ -1,0 +1,8 @@
+node_modules/
+aesthetic-results.md
+aesthetic-calibration.md
+states/
+*.png
+__pycache__/
+.env
+credentials*
