@@ -131,13 +131,28 @@ saved you the churn — that's its job.
 
 ## Assisted pivot (if the judge doesn't clear the bar)
 
-The benchmark protocol (`benchmark/PROTOCOL.md`, **pre-registered — no result
-data exists yet**) defines the kill/pivot rule now, before the first run: if
-the multi-family panel scores **<65%** on held-out WiserUI-Bench pairs (Wilson
-95% CI fully above 55%), v0.1 repositions as **aesthetic-loop assisted** — the
-loop proposes and filters, the human ratifies in batches of 10 swipes. The
-pivot reuses ~90% of this codebase and is an honest product at 55–60%: it
-reverts the worst, surfaces the best, the owner decides.
+The benchmark protocol (`benchmark/PROTOCOL.md`, **pre-registered**) defines
+the kill/pivot rule before the first run: if the panel scores **<65%** on
+held-out WiserUI-Bench pairs (Wilson 95% CI fully above 55%), v0.1 repositions
+as **aesthetic-loop assisted** — the loop proposes and filters, the human
+ratifies in batches of 10 swipes. The pivot reuses ~90% of this codebase and
+is an honest product at 55–60%: it reverts the worst, surfaces the best, the
+owner decides.
+
+## Benchmark status
+
+A **single-family validation run** was executed under the frozen protocol
+(2026-10-05): held-out accuracy **87.2%** with swap-filtering (41/47,
+Wilson 95% CI [74.8%, 94.0%]), zero prompt iterations. Full numbers,
+methodology and caveats in
+[`benchmark/RESULTS_singlefamily_2026-10-05.md`](benchmark/RESULTS_singlefamily_2026-10-05.md).
+
+**What this does and does not mean:** it clears the pre-registered bar for
+**personal/production use** of the loop by the repo owner (GLM judge). It is
+**not** evidence of the anti-Karpathy thesis — the honest critique remains
+"GLM judging GLM", and the multi-family run (a second, non-Z.ai judge family)
+is the license for public performance claims. Until that run exists, this
+README deliberately quotes no benchmark number as a selling point.
 
 ## The slop signal is a signal, not a gate
 
@@ -162,7 +177,8 @@ judge/run_pair.py             1 judge × 1 pair × 2 orders, swap validation, te
 judge/meta_judge.py           windowed swap-rate + κ → CONTINUE | PAUSE_HUMAN | DEMOTE:<id>
 demo/demo_target.html         static demo target, frozen states (zero dynamic content)
 demo/checks/metric.sh         prints exactly 1 number (karpathy-loop contract)
-benchmark/PROTOCOL.md         PRE-REGISTERED WiserUI-Bench protocol (no results yet)
+benchmark/PROTOCOL.md         PRE-REGISTERED WiserUI-Bench protocol
+benchmark/RESULTS_singlefamily_2026-10-05.md  single-family run: 87.2% held-out (personal-use bar cleared)
 benchmark/wilson.py           the CI formula the protocol commits to
 tools/slop_signal.py          slop score — signal + rubric input, never a gate (B2)
 tools/state_census.py         state census by directed crawl, frozen per run (I1)
