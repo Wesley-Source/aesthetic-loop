@@ -25,25 +25,43 @@ O builder recebe apenas o screenshot atual, o brief de melhora e a direção
 estética ainda-não-tentada do deck (`directions/deck.yaml`); assim ele não
 mimetiza o gosto do juiz nem racionaliza regressões.
 
-## ⚠️ Modo single-family — not recommended as sole configuration
+## Single-family mode — o modo padrão (qualquer família)
 
-O protocolo completo (painel multi-família com firewall builder/juiz) exige
-**2+ famílias de modelo** em `judge/panel.yaml`. Com **1 família apenas**
-(ex.: só GLM/Z.ai), o loop RODA MAS EM MODO DEGRADADO:
+O loop funciona **com uma única família de modelo** — Z.ai/GLM, Claude,
+Gemini, qualquer provedor que o usuário tenha. Não é um modo degradado: é
+o modo primário do produto, com salvaguardas reforçadas, porque juiz e
+builder compartilham o mesmo prior estético de RLHF (Panickssery et al.
+2024 — cegueira a código não remove o viés de impressão estilística).
 
-- O firewall por família é impossível: juiz e builder compartilham o mesmo
-  prior estético de RLHF. Cegueira a código/diff NÃO remove family-bias —
-  modelos preferem a própria impressão estilística mesmo sem saber a autoria
-  (Panickssery et al. 2024). Ao longo de 20 rodadas o efeito líquido é
-  convergência ao gosto-médio-da-família com reforço positivo (AI-AI bias,
-  Risco #3 do design).
-- Nesse modo: gates determinísticos decidem quase tudo; o pairwise GLM-only
-  serve só como DESEMPATE entre candidatos que passaram nos gates; rode a
-  meta-juiz com frequência dobrada (a cada 3 rodadas, não 5) e exija voto
-  humano no FIM antes de qualquer merge.
-- O README diz isso explicitamente e a validação WiserUI-Bench multi-família
-  (benchmark/PROTOCOL.md) é o que dá licença para confiar no painel. Não
-  publique resultados de run single-family como evidência da tese.
+### Salvaguardas que o single-family exige (todas automáticas)
+
+1. **Gates determinísticos mandam.** Build, axe, contraste WCAG e o meta-juiz
+   decidem quase tudo; o pairwise intra-família é DESEMPATE entre candidatos
+   que já passaram no chão objetivo — nunca a fonte da verdade.
+2. **Meta-juiz acelerado**: a cada 3 rodadas (não 5). Family-bias acumula
+   mais rápido sem contrapeso entre famílias.
+3. **Voto humano obrigatório no FIM** antes de qualquer merge — e cada voto
+   entra na calibração, que é o contrapeso real: com 10-20 pares seus, o
+   juiz segue o SEU gosto, não o default da família.
+4. **Sinal anti-slop na rubrica do juiz** (não-gate): o detector de slop não
+   bloqueia, mas o prompt penaliza composição genérica — o contrapeso contra
+   o gosto-médio-de-IA que o firewall de família faria no modo multi.
+
+### O que o single-family NÃO permite
+
+- **Publicar resultados como evidência da tese** anti-Karpathy: a crítica
+  honesta é "GLM julga GLM". A validação WiserUI-Bench multi-família
+  (benchmark/PROTOCOL.md) é o que dá licença para afirmações públicas.
+- **Merges autônomos sem seu FIM-humano.** Multi-família: o meta-juiz pode
+  aprovar sozinho com swap-rate/κ saudáveis. Single-family: seu voto no fim
+  é parte do protocolo, não opcional.
+
+### Upgrade para multi-família
+
+`judge/panel.yaml` aceita N famílias com pin de versão. Adicionou uma segunda
+família? O firewall por rodada liga sozinho (família do builder sai do
+painel), o meta-juiz volta a cada 5 rodadas e o requisito de voto humano
+no FIM cai para opcional.
 
 ## Temperatura do juiz: 0.2
 

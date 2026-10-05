@@ -33,26 +33,46 @@ Works in any of the 79+ harnesses that skills.sh indexes. Requirements checked
 by the doctor (below): git, Playwright/Chromium, fonts, and an API key for each
 judge family in `judge/panel.yaml`.
 
-## ⚠️ Single-family mode — not recommended as sole configuration
+## Single-family mode — the default (any family)
 
-The full protocol (multi-family panel + builder/judge firewall) needs **2+
-model families** in `judge/panel.yaml`. The repo ships configured for a single
-family (Z.ai/GLM) and **works, degraded**:
+The loop works with **one single model family** — Z.ai/GLM, Claude, Gemini,
+whatever provider you have. This is not a degraded mode: it is the product's
+primary mode, with reinforced safeguards, because judge and builder share the
+same RLHF aesthetic prior (Panickssery et al. 2024 — blindness to code does
+not remove stylistic-fingerprint bias).
 
-- The firewall is impossible: judge and builder share the same RLHF aesthetic
-  prior. Blindness to code does **not** remove family-bias — models prefer
-  their own stylistic fingerprint even when authorship is hidden
-  (Panickssery et al. 2024). Over 20 rounds, single-family converges to the
-  family's mean taste with positive reinforcement.
-- In this mode: deterministic gates decide almost everything, the GLM-only
-  pairwise only breaks ties between gate-passing candidates, the meta-judge
-  runs every 3 rounds (not 5), and a human vote on the accumulated diff before
-  merge is strongly recommended.
-- **Do not publish single-family results as evidence of the thesis.** The
-  multi-family validation (below) is the license to trust the panel.
+### Safeguards single-family requires (all automatic)
 
-**Multi-family validation is pending**: the owner is acquiring ~US$5–10 of
-frontier API credits (Sonnet-class, 1–2 families) to run the WiserUI-Bench
+1. **Deterministic gates rule.** Build, axe, WCAG contrast and the meta-judge
+   decide almost everything; the intra-family pairwise only breaks ties between
+   gate-passing candidates — never the source of truth.
+2. **Accelerated meta-judge**: every 3 rounds (not 5). Family-bias accumulates
+   faster without cross-family counterweight.
+3. **Mandatory human vote at END** before any merge — and every vote feeds the
+   calibration layer, which is the real counterweight: with 10–20 of your
+   pairs, the judge follows YOUR taste, not the family default.
+4. **Anti-slop signal in the judge's rubric** (not a gate): the slop detector
+   never blocks, but the prompt penalizes generic composition — the
+   counterweight that a family firewall would provide in multi-family mode.
+
+### What single-family does NOT allow
+
+- **Publishing results as evidence of the anti-Karpathy thesis**: the honest
+  critique is "GLM judging GLM". Multi-family WiserUI-Bench validation
+  (benchmark/PROTOCOL.md) is the license for public claims.
+- **Autonomous merges without your END-human vote.** Multi-family: the
+  meta-judge may approve alone with healthy swap-rate/κ. Single-family: your
+  end-of-run vote is part of the protocol, not optional.
+
+### Upgrading to multi-family
+
+`judge/panel.yaml` accepts N families with exact model pins. Add a second
+family and the per-round firewall turns on by itself (the builder's family
+leaves the panel), the meta-judge relaxes to every 5 rounds, and the
+END-human-vote requirement drops to optional.
+
+**Multi-family validation** (WiserUI-Bench with 2+ families) strengthens
+public claims; the protocol is pre-registered and ready to run whenever
 validation and produce the launch evidence. `panel.yaml` already accepts the
 multi-family format — flip `mode` and un-comment the judges.
 
