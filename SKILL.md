@@ -102,6 +102,32 @@ Fixa em `judge/panel.yaml` (`judge_temperature: 0.2`), não 0 nem 1.0:
    juiz julga).
 7. `aesthetic-results.md` (APPEND-only) + `aesthetic-calibration.md` criados.
 
+### 7b. Target adaptation checklist (aprendido no 1º uso real — pokai, 2026-10-05)
+
+Antes da rodada 1, PROVE que o pipeline vê as mudanças que o builder faz.
+Três lições de um run real que quase produziu 5 rodadas de julgamento fantasma:
+
+- **Onde o diff aparece**: páginas com abas/rotas renderizam só parte do DOM
+  por vez. O target de captura deve ser O ESTADO ONDE O CSS PATCHEADO É
+  VISÍVEL — no caso real, a tabela de turnos só existia na aba "Turns"; toda
+  screenshot da aba default fotografava uma página onde o patch não existia.
+  Documente no run: "diff de density aparece em: aba X, seletor Y".
+- **Computed style é a prova; pixel/md5 é só indício**: recursos externos
+  (sprites de CDN, ads, avatares) mudam entre capturas do MESMO estado — md5
+  igual NÃO prova ausência de diff, md5 diferente NÃO prova presença. Prove
+  aplicação lendo o computed style do elemento alvo ao vivo
+  (`getComputedStyle(td).paddingBlock === "5px"`) — o gate de invariância
+  DOM (`tools/dom_invariance.py`) cobre o caso geral.
+- **Juiz com smoke real antes da rodada 1**: 1 chamada pairwise legítima
+  (champion vs champion com diff sintético visível, ex.: padding 8→3px) —
+  endpoint, saldo e visão validados em ~30s. Erros comuns que isso pega:
+  endpoint da API errado (plano/conta divergentes dão 429 "no balance"
+  ENQUANTO a key funciona no endpoint certo), contrato de parâmetros que
+  mudou server-side (ex.: `thinking`), browser do Playwright ausente.
+- **Revert cirúrgico**: `git checkout -- <arquivo>` (código), nunca
+  `-- .` na raiz — estado de runtime do alvo (DBs, sessões, uploads) não é
+  código e reverter pode derrubar o preview no meio do run.
+
 ## Gates determinísticos (o chão — imutáveis durante o loop)
 
 `bash gates/run_gates.sh <champion_url> <challenger_url>` — ordem do mais
